@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>رحلة في عالم مكارم الأخلاق – تحدّي القيم والبلاغة</title>
+  <style>
+    :root{
+      --green:#1E8E3E; --yellow:#D4AF37; --red:#8B0000;
+      --text:#e5e7eb; --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial; background:linear-gradient(180deg,#0b1020,#050815); color:var(--text)}
+    .topbar{
+      height:72px; display:flex; align-items:center; gap:16px;
+      padding:0 16px; border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.25); backdrop-filter: blur(6px);
+      position:sticky; top:0; z-index:50;
+    }
+    .brand{display:flex; align-items:center; gap:10px; min-width:160px}
+    .brand img{width:56px; height:56px; object-fit:contain}
+    .center{flex:1; display:flex; flex-direction:column; gap:6px}
+    .viewTitle{font-weight:700}
+    .progressWrap{height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden}
+    .progressBar{height:100%; width:0%; background:linear-gradient(90deg,var(--yellow),#60a5fa)}
+    .right{display:flex; align-items:center; gap:10px}
+    .pill{padding:8px 10px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.04)}
+    .btn{border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:var(--text); padding:10px 12px; border-radius:12px; cursor:pointer}
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn.primary{border-color:rgba(212,175,55,.45); background:rgba(212,175,55,.12)}
+    .btn.danger{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.10)}
+    .container{max-width:1100px; margin:20px auto; padding:0 16px}
+    .card{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.10); border-radius:18px; padding:18px;}
+    .grid{display:grid; gap:16px}
+    .gates{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:900px){ .gates{grid-template-columns:1fr} }
+    .gate{padding:18px; border-radius:18px; border:1px solid rgba(255,255,255,.12); cursor:pointer; background:linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); min-height:140px; position:relative}
+    .gate .tag{position:absolute; top:14px; left:14px; padding:6px 10px; border-radius:999px; font-size:12px; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.12)}
+    .gate h3{margin:0 0 8px}
+    .gate p{margin:0; color:var(--muted); line-height:1.6}
+    .hidden{display:none !important}
+    .divider{height:1px;background:rgba(255,255,255,.10); margin:14px 0}
+    .qa{display:flex; flex-direction:column; gap:14px}
+    .qTitle{font-weight:700; line-height:1.7}
+    .choices{display:grid; gap:10px}
+    .choice{text-align:right; padding:12px; border-radius:14px; cursor:pointer; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18)}
+    .choice:hover{background:rgba(255,255,255,.06)}
+    .feedback{padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); color:var(--muted); line-height:1.7}
+    .feedback.ok{border-color:rgba(34,197,94,.4); color:#d1fae5}
+    .feedback.bad{border-color:rgba(239,68,68,.4); color:#fee2e2}
+    .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+    .muted{color:var(--muted)}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size:12px; padding:3px 7px; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06)}
+    .teacherTable{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px}
+    .teacherTable th,.teacherTable td{border-bottom:1px solid rgba(255,255,255,.10); padding:10px; text-align:right}
+    .teacherTable th{background:rgba(255,255,255,.04)}
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" title="مدارس الإمارات الوطنية">
+    <img id="ensLogo" src="" alt="مدارس الإمارات الوطنية">
+    <div class="muted" style="font-size:12px;line-height:1.2">
+      <div>Emirates National Schools</div>
+      <div class="kbd">ENS</div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div id="viewTitle" class="viewTitle">... جاري التحميل</div>
+    <div class="progressWrap"><div id="progressBar" class="progressBar"></div></div>
+  </div>
+
+  <div class="right">
+    <div class="pill">النقاط: <span id="points">0</span></div>
+    <button class="btn" id="homeBtn">الرئيسية</button>
+    <button class="btn" id="helpBtn">مساعدة</button>
+    <button class="btn danger" id="resetBtn">إعادة ضبط</button>
+  </div>
+</header>
+
+<main class="container">
+  <section id="homeView" class="card hidden">
+    <h2 style="margin-top:0" id="homeTitle"></h2>
+    <p class="muted" style="margin-top:0;line-height:1.8" id="homeSubtitle"></p>
+
+    <div class="grid gates" id="gateGrid"></div>
+
+    <div class="divider"></div>
+    <div class="row">
+      <div class="muted">للمعلم: <span class="kbd">Shift</span> + <span class="kbd">T</span></div>
+      <div class="muted">تشغيل عبر خادم محلي مطلوب لقراءة JSON</div>
+    </div>
+  </section>
+
+  <section id="levelView" class="card hidden">
+    <div class="row">
+      <div>
+        <h2 id="levelTitle" style="margin:0"></h2>
+        <div class="muted" id="levelDesc"></div>
+      </div>
+      <div class="row" style="gap:8px">
+        <div class="pill">النتيجة: <span id="scorePct">0</span>%</div>
+        <div class="pill">محاولات: <span id="attempts">0</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div id="qa" class="qa"></div>
+    <div class="divider"></div>
+
+    <div class="row">
+      <button class="btn" id="prevBtn">السابق</button>
+      <div class="muted" id="qCounter"></div>
+      <button class="btn primary" id="nextBtn">التالي</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="row">
+      <button class="btn hidden" id="toYellowBtn">انتقل إلى المستوى الأصفر</button>
+      <button class="btn hidden" id="toRedBtn">انتقل إلى المستوى الأحمر</button>
+      <button class="btn hidden" id="reviewBtn">راجع الأخطاء</button>
+    </div>
+  </section>
+
+  <section id="teacherView" class="card hidden">
+    <div class="row">
+      <h2 style="margin:0">لوحة متابعة تقدم المتعلمين</h2>
+      <button class="btn" id="closeTeacherBtn">إغلاق</button>
+    </div>
+
+    <p class="muted" style="line-height:1.8">بيانات محلية لهذا الجهاز.</p>
+
+    <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+      <div class="card"><div class="muted">أكمل الأخضر</div><div style="font-size:26px;font-weight:800" id="tGreen">0</div></div>
+      <div class="card"><div class="muted">أكمل الأصفر</div><div style="font-size:26px;font-weight:800" id="tYellow">0</div></div>
+      <div class="card"><div class="muted">وصل للأحمر</div><div style="font-size:26px;font-weight:800" id="tRed">0</div></div>
+    </div>
+
+    <div class="divider"></div>
+    <table class="teacherTable">
+      <thead>
+        <tr><th>المستوى</th><th>النسبة</th><th>الصحيح</th><th>الإجمالي</th><th>عدد المحاولات</th><th>آخر تحديث</th></tr>
+      </thead>
+      <tbody id="teacherRows"></tbody>
+    </table>
+  </section>
+
+  <section id="loadingView" class="card">
+    <h2 style="margin-top:0">جاري تحميل الإعدادات...</h2>
+    <p class="muted">تأكد من تشغيل الصفحة عبر خادم محلي وأن ملف <span class="kbd">game-config.json</span> موجود.</p>
+  </section>
+</main>
+
+<script>
+/* ---------- LOADER ---------- */
+let CONFIG = null;
+
+async function loadConfig(){
+  const res = await fetch("./game-config.json", { cache: "no-store" });
+  if(!res.ok) throw new Error("Failed to load game-config.json");
+  return await res.json();
+}
+
+/* ---------- STORAGE ---------- */
+const LS_KEY = "makarem_game_state_v2";
+const defaultState = { points:0, history:{green:null,yellow:null,red:null}, current:{view:"home", level:null, run:null} };
+let STATE = loadState();
+
+function loadState(){ try{ const raw=localStorage.getItem(LS_KEY); return raw?JSON.parse(raw):structuredClone(defaultState);}catch(e){return structuredClone(defaultState);} }
+function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(STATE)); }
+function nowISO(){ return new Date().toISOString(); }
+
+/* ---------- HELPERS ---------- */
+function $(id){ return document.getElementById(id); }
+function show(view){
+  $("homeView").classList.toggle("hidden", view!=="home");
+  $("levelView").classList.toggle("hidden", view!=="level");
+  $("teacherView").classList.toggle("hidden", view!=="teacher");
+  $("loadingView").classList.toggle("hidden", view!=="loading");
+}
+function setTitle(t){ $("viewTitle").textContent = t; }
+function setProgress(p){ $("progressBar").style.width = `${p}%`; }
+function setPoints(p){ $("points").textContent = p; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function pct(n,d){ return d===0?0:Math.round((n/d)*100); }
+
+/* ---------- ENGINE ---------- */
+function qb(){ return CONFIG.questionBank; }
+function levelCfg(id){ return CONFIG.levels.find(x=>x.id===id); }
+
+function currentRun(){ return STATE.current.run; }
+function currentLevel(){ return STATE.current.level; }
+function computeScore(){ const r=currentRun(); return pct(r.correct, r.total); }
+
+function qIsHigh(id){ return CONFIG.levels.find(x=>x.id==="red").adaptiveEngine.difficultyModel.high.includes(id); }
+function qIsMedium(id){ return CONFIG.levels.find(x=>x.id==="red").adaptiveEngine.difficultyModel.medium.includes(id); }
+
+function pickRoomQuestions(room, pickedGlobal, count){
+  let pool = room.pool.filter(x=>!pickedGlobal.has(x));
+  let picked = [];
+
+  const pickOne=(id)=>{
+    if(!pickedGlobal.has(id) && pool.includes(id)){
+      picked.push(id); pickedGlobal.add(id);
+      pool = pool.filter(x=>x!==id);
+    }
+  };
+
+  if(room.constraints?.mustInclude){ room.constraints.mustInclude.forEach(pickOne); }
+  if(room.constraints?.mustIncludeAtLeastOneOf){
+    const cands = room.constraints.mustIncludeAtLeastOneOf.filter(x=>pool.includes(x));
+    if(cands.length) pickOne(cands[Math.floor(Math.random()*cands.length)]);
+  }
+
+  if(count===2 && room.constraints?.ifPickCountEquals?.["2"]?.mustInclude){
+    room.constraints.ifPickCountEquals["2"].mustInclude.forEach(pickOne);
+  }
+
+  const remainingNeeded = Math.max(0, count - picked.length);
+  shuffle(pool).slice(0, remainingNeeded).forEach(id=>pickOne(id));
+
+  if(count===2 && room.constraints?.ifPickCountEquals?.["2"]?.preferInclude){
+    const preferred = room.constraints.ifPickCountEquals["2"].preferInclude.find(x=>room.pool.includes(x));
+    if(preferred && !picked.includes(preferred) && !pickedGlobal.has(preferred)){
+      if(picked.length){
+        const removed = picked.pop(); pickedGlobal.delete(removed);
+        pickOne(preferred);
+      }
+    }
+  }
+
+  // balanced order
+  if(picked.length>=2){
+    const first = picked.find(qIsMedium);
+    const last = picked.find(qIsHigh);
+    picked = shuffle(picked);
+    if(first) picked = [first, ...picked.filter(x=>x!==first)];
+    if(last) picked = [...picked.filter(x=>x!==last), last];
+  } else picked = shuffle(picked);
+
+  return picked;
+}
+
+function buildRedRun(){
+  const red = levelCfg("red");
+  const rooms = red.rooms;
+  const pickedGlobal = new Set();
+  const basePlan = { A:2, B:2, C:2, D:3, E:2 };
+  const run = { levelId:"red", targetCount:11, rooms:{}, order:[], meta:{ gate1Target:11 } };
+
+  ["A","B","C","D","E"].forEach(rid=>{
+    const room = rooms.find(r=>r.id===rid);
+    run.rooms[rid] = pickRoomQuestions(room, pickedGlobal, basePlan[rid]);
+    run.order.push(...run.rooms[rid]);
+  });
+
+  run.order = [...run.rooms.A, ...run.rooms.B, ...run.rooms.C, ...run.rooms.D, ...run.rooms.E];
+  return run;
+}
+
+function expandRunTo(run, newTarget){
+  const red = levelCfg("red");
+  const rooms = red.rooms.reduce((acc,r)=>{acc[r.id]=r; return acc;},{});
+  const pickedGlobal = new Set(run.order);
+  const priority = red.adaptiveEngine.expansionPolicy.priorityRoomOrder;
+
+  while(run.order.length < newTarget){
+    let added = false;
+    for(const rid of priority){
+      const room = rooms[rid];
+      if(run.rooms[rid].length < room.maxPick){
+        const extra = pickRoomQuestions(room, pickedGlobal, 1);
+        if(extra.length){
+          run.rooms[rid].push(...extra);
+          run.order = [...run.rooms.A, ...run.rooms.B, ...run.rooms.C, ...run.rooms.D, ...run.rooms.E];
+          added = true;
+          break;
+        }
+      }
+    }
+    if(!added) break;
+  }
+  run.targetCount = run.order.length;
+}
+
+function startLevel(levelId){
+  const lvl = levelCfg(levelId);
+  let run;
+
+  if(levelId==="red"){
+    run = buildRedRun();
+  } else {
+    const ids = lvl.activities[0].selection.questionIds.slice();
+    run = { levelId, order: shuffle(ids), targetCount: ids.length, meta:{} };
+  }
+
+  STATE.current.view = "level";
+  STATE.current.level = levelId;
+  STATE.current.run = {
+    levelId,
+    order: run.order,
+    idx: 0,
+    correct: 0,
+    total: run.order.length,
+    attempts: 0,
+    answered: {},
+    locked: false,
+    targetCount: run.targetCount,
+    gate1Applied: false,
+    gate2Applied: false,
+    redRooms: run.rooms || null,
+    redMeta: run.meta || {}
+  };
+  saveState();
+  render();
+}
+
+function applyRedGatesIfNeeded(){
+  const r = currentRun();
+  if(r.levelId!=="red") return;
+
+  const red = levelCfg("red");
+  const answeredCount = Object.keys(r.answered).length;
+
+  if(!r.gate1Applied && answeredCount>=4){
+    const first4 = r.order.slice(0,4);
+    let correct4=0;
+    first4.forEach(id=>{ if(r.answered[id]?.correct) correct4++; });
+
+    let target = red.adaptiveEngine.gates[0].rules[2].else.setTargetQuestionCount;
+    if(correct4>=4) target = red.adaptiveEngine.gates[0].rules[0].then.setTargetQuestionCount;
+    else if(correct4>=3) target = red.adaptiveEngine.gates[0].rules[1].then.setTargetQuestionCount;
+
+    r.gate1Applied = true;
+    if(target > r.total){
+      const temp = { levelId:"red", order:r.order.slice(), rooms:r.redRooms, targetCount:r.total, meta:r.redMeta };
+      expandRunTo(temp, target);
+      r.order = temp.order;
+      r.redRooms = temp.rooms;
+      r.total = temp.order.length;
+      r.targetCount = r.total;
+    }
+  }
+
+  const dEndIndexBase = 9;
+  if(!r.gate2Applied && answeredCount>=dEndIndexBase){
+    const acc = pct(r.correct, answeredCount);
+    r.gate2Applied = true;
+
+    const temp = { levelId:"red", order:r.order.slice(), rooms:r.redRooms, targetCount:r.total, meta:r.redMeta };
+
+    if(acc>=85){
+      expandRunTo(temp, 20);
+      if(temp.order.length<20) expandRunTo(temp, 18);
+    } else if(acc>=70){
+      expandRunTo(temp, 17);
+      if(temp.order.length<17) expandRunTo(temp, 15);
+    }
+    r.order = temp.order;
+    r.redRooms = temp.rooms;
+    r.total = temp.order.length;
+    r.targetCount = r.total;
+  }
+}
+
+function answerQuestion(val){
+  const r = currentRun();
+  const qId = r.order[r.idx];
+  const q = qb().questions.find(x=>x.id===qId);
+  if(!q || r.locked) return;
+
+  r.attempts++;
+  const prev = r.answered[qId] || { attempts:0, correct:false };
+  prev.attempts++;
+
+  let isCorrect=false;
+  if(q.type==="mcq") isCorrect = (val===q.correctChoiceId);
+  else isCorrect = (val===q.correctAnswer);
+
+  if(isCorrect && !prev.correct){
+    r.correct++;
+    prev.correct = true;
+    const firstTry = prev.attempts===1;
+    STATE.points += CONFIG.gamification.points.correct + (firstTry ? CONFIG.gamification.points.firstTryBonus : 0);
+  }
+  r.answered[qId]=prev;
+
+  r.locked = prev.correct || prev.attempts>=2;
+  applyRedGatesIfNeeded();
+  saveState();
+  renderFeedback(q, isCorrect);
+  updateHeader();
+}
+
+function next(){
+  const r=currentRun();
+  if(r.idx < r.order.length-1){ r.idx++; r.locked=false; saveState(); render(); }
+  else finishLevel();
+}
+function prev(){
+  const r=currentRun();
+  if(r.idx>0){ r.idx--; r.locked=false; saveState(); render(); }
+}
+function finishLevel(){
+  const r=currentRun();
+  const score = computeScore();
+  STATE.history[r.levelId] = {
+    scorePct: score,
+    correct: r.correct,
+    total: r.total,
+    attempts: r.attempts,
+    updatedAt: nowISO(),
+    reachedQCount: r.total
+  };
+  saveState();
+  render();
+}
+
+/* ---------- RENDER ---------- */
+function updateHeader(){
+  setPoints(STATE.points);
+  if(STATE.current.view==="home"){ setTitle(CONFIG.homeView.title); setProgress(0); }
+  else if(STATE.current.view==="level"){
+    const lvl = levelCfg(currentLevel());
+    setTitle(lvl.title);
+    const r=currentRun();
+    setProgress(pct(Object.keys(r.answered).length, r.total));
+  } else { setTitle("لوحة متابعة تقدم المتعلمين"); setProgress(0); }
+}
+
+function render(){
+  updateHeader();
+
+  if(STATE.current.view==="loading"){ show("loading"); return; }
+
+  if(STATE.current.view==="home"){
+    show("home");
+    renderHome();
+    return;
+  }
+  if(STATE.current.view==="teacher"){
+    show("teacher");
+    renderTeacher();
+    return;
+  }
+  show("level");
+  renderLevel();
+}
+
+function renderHome(){
+  $("homeTitle").textContent = CONFIG.homeView.title;
+  $("homeSubtitle").textContent = CONFIG.homeView.subtitle;
+
+  const grid = $("gateGrid");
+  grid.innerHTML = "";
+  CONFIG.homeView.gates.forEach(g=>{
+    const div = document.createElement("div");
+    div.className = "gate";
+    div.innerHTML = `
+      <div class="tag">${g.name.split("–")[0].trim()}</div>
+      <h3>${g.name}</h3>
+      <p>${g.description}</p>
+    `;
+    div.onclick = ()=> startLevel(g.levelId);
+    grid.appendChild(div);
+  });
+}
+
+function renderLevel(){
+  const lvl = levelCfg(currentLevel());
+  const r = currentRun();
+
+  $("levelTitle").textContent = lvl.title;
+  $("levelDesc").textContent = lvl.theme?.scene ? `المشهد: ${lvl.theme.scene}` : "";
+  $("scorePct").textContent = computeScore();
+  $("attempts").textContent = r.attempts;
+  $("qCounter").textContent = `سؤال ${r.idx+1} / ${r.total}`;
+
+  const qId = r.order[r.idx];
+  const q = qb().questions.find(x=>x.id===qId);
+  renderQuestion(qId, q);
+  renderButtons();
+}
+
+function renderQuestion(qId, q){
+  const qa = $("qa");
+  qa.innerHTML = "";
+
+  const title = document.createElement("div");
+  title.className = "qTitle";
+  title.textContent = q.prompt;
+  qa.appendChild(title);
+
+  if(qId===32){
+    const sc = document.createElement("div");
+    sc.className="feedback";
+    sc.textContent="سيناريو: نشر أحدهم تعليقًا مسيئًا عن زميله في مجموعة الصف. هل يمكن تطبيق قيمة «رد الإساءة بالإحسان» اليوم؟";
+    qa.appendChild(sc);
+  }
+
+  const choices = document.createElement("div");
+  choices.className="choices";
+  qa.appendChild(choices);
+
+  const answered = currentRun().answered[qId];
+  const locked = answered && (answered.correct || answered.attempts>=2);
+
+  if(q.type==="mcq"){
+    const keys = shuffle(q.choices.map(c=>c.id));
+    keys.forEach(cid=>{
+      const c = q.choices.find(x=>x.id===cid);
+      const btn = document.createElement("button");
+      btn.className="choice";
+      btn.textContent = c.text;
+      btn.disabled = !!locked;
+      btn.onclick = ()=> answerQuestion(cid);
+      choices.appendChild(btn);
+    });
+  } else {
+    const btnT = document.createElement("button");
+    btnT.className="choice"; btnT.textContent="صواب";
+    btnT.disabled=!!locked; btnT.onclick=()=>answerQuestion(true);
+    const btnF = document.createElement("button");
+    btnF.className="choice"; btnF.textContent="خطأ";
+    btnF.disabled=!!locked; btnF.onclick=()=>answerQuestion(false);
+    choices.appendChild(btnT); choices.appendChild(btnF);
+  }
+
+  if(answered){
+    const fb = document.createElement("div");
+    fb.className = "feedback " + (answered.correct ? "ok":"bad");
+    fb.textContent = answered.correct ? q.feedback.correct : q.feedback.wrong;
+    qa.appendChild(fb);
+
+    if(!answered.correct && answered.attempts===1){
+      const hint = document.createElement("div");
+      hint.className="feedback";
+      hint.textContent="تلميح: راجع المعنى والدلالة قبل إعادة المحاولة.";
+      qa.appendChild(hint);
+    }
+  }
+}
+
+function renderFeedback(q, isCorrect){
+  const qa = $("qa");
+  const fb = document.createElement("div");
+  fb.className = "feedback " + (isCorrect ? "ok":"bad");
+  fb.textContent = isCorrect ? q.feedback.correct : q.feedback.wrong;
+  qa.appendChild(fb);
+
+  if(!isCorrect){
+    const qId = currentRun().order[currentRun().idx];
+    const answered = currentRun().answered[qId];
+    if(answered && answered.attempts===1){
+      const hint = document.createElement("div");
+      hint.className="feedback";
+      hint.textContent="تلميح: فكّر في الخيار الأقرب للنص وفي الغرض البلاغي أو القيمة المقصودة.";
+      qa.appendChild(hint);
+    }
+  }
+  renderButtons();
+}
+
+function renderButtons(){
+  const r=currentRun();
+  $("prevBtn").disabled = r.idx===0;
+  $("nextBtn").textContent = (r.idx===r.order.length-1) ? "إنهاء" : "التالي";
+
+  const finished = Object.keys(r.answered).length===r.total;
+  const passed = finished && computeScore()>=CONFIG.progressRules.passPercentPerLevel;
+
+  $("toYellowBtn").classList.add("hidden");
+  $("toRedBtn").classList.add("hidden");
+  $("reviewBtn").classList.add("hidden");
+
+  if(finished){
+    $("reviewBtn").classList.remove("hidden");
+    $("reviewBtn").onclick = reviewMistakes;
+  }
+
+  if(currentLevel()==="green" && passed){
+    $("toYellowBtn").classList.remove("hidden");
+    $("toYellowBtn").onclick = ()=> startLevel("yellow");
+  }
+  if(currentLevel()==="yellow" && passed){
+    $("toRedBtn").classList.remove("hidden");
+    $("toRedBtn").onclick = ()=> startLevel("red");
+  }
+}
+
+function reviewMistakes(){
+  const r=currentRun();
+  const wrongIds = r.order.filter(id=>r.answered[id] && !r.answered[id].correct);
+  if(!wrongIds.length){ alert("لا توجد أخطاء لمراجعتها."); return; }
+  r.idx = r.order.indexOf(wrongIds[0]);
+  r.locked=false;
+  saveState();
+  render();
+}
+
+/* ---------- TEACHER ---------- */
+function renderTeacher(){
+  const h=STATE.history;
+  $("tGreen").textContent = h.green && h.green.scorePct>=CONFIG.progressRules.passPercentPerLevel ? "1":"0";
+  $("tYellow").textContent = h.yellow && h.yellow.scorePct>=CONFIG.progressRules.passPercentPerLevel ? "1":"0";
+  $("tRed").textContent = h.red ? "1":"0";
+
+  const rows=$("teacherRows"); rows.innerHTML="";
+  ["green","yellow","red"].forEach(l=>{
+    const lvl = levelCfg(l);
+    const rec=h[l];
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td>${lvl.title}</td>
+      <td>${rec ? rec.scorePct : 0}%</td>
+      <td>${rec ? rec.correct : 0}</td>
+      <td>${rec ? rec.total : 0}</td>
+      <td>${rec ? rec.attempts : 0}</td>
+      <td>${rec ? rec.updatedAt : "-"}</td>
+    `;
+    rows.appendChild(tr);
+  });
+}
+
+/* ---------- EVENTS ---------- */
+$("homeBtn").onclick = ()=>{ STATE.current.view="home"; STATE.current.level=null; STATE.current.run=null; saveState(); render(); };
+$("helpBtn").onclick = ()=> alert("اختر أي بوابة. لديك محاولتان لكل سؤال. النجاح 80%. المستوى الأحمر متكيّف وقد يزيد عدد الأسئلة حسب أدائك.");
+$("resetBtn").onclick = ()=>{ if(confirm("إعادة ضبط التقدم؟")){ localStorage.removeItem(LS_KEY); STATE=loadState(); render(); } };
+$("prevBtn").onclick = prev;
+$("nextBtn").onclick = next;
+$("closeTeacherBtn").onclick = ()=>{ STATE.current.view="home"; saveState(); render(); };
+
+window.addEventListener("keydown",(e)=>{
+  if(e.shiftKey && (e.key==="T"||e.key==="t")){
+    const pin = prompt("أدخل PIN المعلم:");
+    if(pin === (CONFIG.auth?.teacherPin || "1234")){
+      STATE.current.view="teacher"; saveState(); render();
+    } else alert("PIN غير صحيح.");
+  }
+});
+
+/* ---------- INIT ---------- */
+(async function init(){
+  try{
+    STATE.current.view="loading";
+    render();
+    CONFIG = await loadConfig();
+
+    // logo
+    const logoSrc = CONFIG.assets?.["ens-logo"]?.src || CONFIG.assets?.ensLogoSrc || "ens-logo.png";
+    $("ensLogo").src = logoSrc;
+
+    // go home
+    STATE.current.view="home";
+    STATE.current.level=null;
+    STATE.current.run=null;
+    saveState();
+    render();
+  }catch(err){
+    console.error(err);
+    show("loading");
+    setTitle("خطأ في التحميل");
+    $("loadingView").innerHTML = `
+      <h2 style="margin-top:0">تعذر تحميل game-config.json</h2>
+      <p class="muted">السبب الشائع: فتح الملف مباشرة بدون خادم. شغّل خادم محلي ثم أعد المحاولة.</p>
+      <pre class="muted" style="white-space:pre-wrap">${String(err)}</pre>
+    `;
+  }
+})();
+</script>
+</body>
+</html>
